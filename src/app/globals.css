@@ -1,0 +1,719 @@
+@import 'tailwindcss';
+
+/*
+  Plainwater: tokens, base styles and shared primitives.
+
+  Figma frames are 2562 wide, which is 2x a 1281 desktop. Type and spacing use
+  Figma / 2 at 1281, made fluid with clamp. The hero and method sections use
+  stage units instead (see .stage-hero / .stage-method and lib/stage.ts).
+*/
+
+@theme {
+  --color-limestone: #ece8e1;
+  --color-paper: #f7f4ee;
+  --color-slate: #2b2e2f;
+  --color-ink: #1f2122;
+  --color-muted: #6a6963;
+  --color-concrete: #9a9890;
+  --color-cobalt: #1f3bb3;
+  --color-cobalt-deep: #14205e;
+  --color-sandstone: #d8c6a3;
+  --color-ghost: #dad5ca;
+  --color-ghost-deep: #bdb6a8;
+  --color-stone: #dcd6cb;
+  --color-sand: #e6e1d8;
+  --color-dirt: #57534a;
+
+  --font-sans: var(--nf-sans), 'Neue Montreal', 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: var(--nf-serif), 'Apple Garamond', Georgia, 'Times New Roman', serif;
+  --font-garamond: var(--nf-garamond), Georgia, serif;
+  --font-mono: var(--nf-mono), ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  --text-display: clamp(52px, 8.2vw, 150px);
+  --text-display--line-height: 0.92;
+  --text-display--letter-spacing: -0.02em;
+  --text-title: clamp(40px, 4.06vw, 76px);
+  --text-title--line-height: 1;
+  --text-statement: clamp(30px, 3.43vw, 64px);
+  --text-statement--line-height: 1.12;
+  --text-statement--letter-spacing: -0.03em;
+  --text-card-title: clamp(28px, 2.8vw, 52px);
+  --text-card-title--line-height: 1.05;
+  --text-card-title--letter-spacing: -0.03em;
+  --text-question: clamp(20px, 1.8vw, 34px);
+  --text-question--line-height: 1.2;
+  --text-body-lg: clamp(16px, 1.35vw, 24px);
+  --text-body-lg--line-height: 1.45;
+  --text-body: clamp(15px, 1.2vw, 20px);
+  --text-body--line-height: 1.5;
+  --text-button: clamp(14px, 1.15vw, 18px);
+  --text-button--line-height: 1;
+  --text-mono: clamp(11px, 0.78vw, 14px);
+  --text-mono--line-height: 1.3;
+  --text-mono--letter-spacing: 0.06em;
+
+  --radius-btn: 8px;
+  --radius-card: 16px;
+  --radius-print: 4px;
+
+  --shadow-print: 0 2px 5px rgb(43 46 47 / 0.06), 0 15px 30px rgb(43 46 47 / 0.18);
+  --shadow-stack: 0 -6px 17px rgb(43 46 47 / 0.12);
+  --shadow-card: 0 4px 12px rgb(20 32 94 / 0.12), 0 30px 70px rgb(20 32 94 / 0.32);
+
+  --ease-pw-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-pw-soft: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-pw-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --breakpoint-lg: 1024px;
+}
+
+:root {
+  --vw: 100vw;
+  --pad: clamp(20px, 4.4vw, 80px);
+  --nav-h: 64px;
+  /* Section background, read by anything that paints "the background" (jet erasers) */
+  --bg: var(--color-limestone);
+  --fg: var(--color-slate);
+  --focus: var(--color-cobalt);
+  --jet: var(--color-cobalt);
+}
+
+/* ---------- Themes. Every section carries data-theme. ---------- */
+[data-theme='light'],
+[data-nav-theme='light'] {
+  --bg: var(--color-limestone);
+  --fg: var(--color-slate);
+  --focus: var(--color-cobalt);
+  --jet: var(--color-cobalt);
+  --tag-fill: rgb(43 46 47 / 0.08);
+  --rule: rgb(43 46 47 / 0.22);
+}
+[data-theme='cobalt'],
+[data-nav-theme='cobalt'] {
+  --bg: var(--color-cobalt);
+  --fg: var(--color-limestone);
+  --focus: var(--color-limestone);
+  --jet: var(--color-limestone);
+  --tag-fill: rgb(236 232 225 / 0.14);
+  --rule: rgb(236 232 225 / 0.3);
+}
+[data-theme='dark'],
+[data-nav-theme='dark'] {
+  --bg: var(--color-ink);
+  --fg: var(--color-limestone);
+  --focus: var(--color-limestone);
+  --jet: var(--color-limestone);
+  --tag-fill: rgb(236 232 225 / 0.12);
+  --rule: rgb(236 232 225 / 0.2);
+}
+
+@layer base {
+  [data-theme] {
+    background-color: var(--bg);
+    color: var(--fg);
+  }
+
+  /* ---------- Base ---------- */
+  html {
+    overflow-y: scroll;
+    -webkit-text-size-adjust: 100%;
+    background: var(--color-limestone);
+    color: var(--color-slate);
+  }
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+  .lenis.lenis-stopped {
+    overflow: clip;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-kerning: normal;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    background: var(--color-cobalt);
+    color: var(--color-limestone);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  img,
+  svg {
+    display: block;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  /* Anything the hero's load timeline reveals is held until the timeline takes it. */
+  @media (prefers-reduced-motion: no-preference) {
+    html.js [data-intro] {
+      visibility: hidden;
+    }
+  }
+
+  /*
+    The preloader is in the server HTML but only shows when the boot script has
+    picked an intro: the full rinse on a first visit, a short fade on repeats.
+  */
+  [data-preloader] {
+    display: none;
+  }
+  html.intro-pending [data-preloader],
+  html.intro-repeat [data-preloader] {
+    display: flex;
+  }
+  /* !important: the content carries layout utilities, which sit in a later layer. */
+  html.intro-repeat [data-preloader-content] {
+    display: none !important;
+  }
+}
+
+/* ---------- Primitives ---------- */
+@utility mono {
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@utility serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-feature-settings: 'kern', 'liga';
+}
+
+@utility display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--text-display);
+  line-height: 0.92;
+  letter-spacing: -0.02em;
+}
+
+@utility px-page {
+  padding-inline: var(--pad);
+}
+
+@utility rule {
+  height: 1px;
+  background: var(--rule);
+}
+
+/* Always-underlined text link; on hover the line leaves right and draws back in from the left. */
+@utility text-link {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.14em;
+    height: max(1px, 0.06em);
+    background: currentColor;
+    transform-origin: left center;
+  }
+  @media (hover: hover) {
+    &:hover::after {
+      animation: link-redraw 0.8s var(--ease-pw-out);
+    }
+  }
+}
+
+@keyframes link-redraw {
+  0% {
+    transform: scaleX(1);
+    transform-origin: right center;
+  }
+  45% {
+    transform: scaleX(0);
+    transform-origin: right center;
+  }
+  46% {
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  100% {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.print.is-lifted::after {
+  opacity: 1;
+}
+
+/* A 1px underline that draws left to right on hover and leaves right to left. */
+@utility link-draw {
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.18em;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 0.4s var(--ease-pw-out);
+  }
+  @media (hover: hover) {
+    &:hover::after {
+      transform: scaleX(1);
+      transform-origin: left center;
+    }
+  }
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+
+@layer components {
+  /* ---------- Compact nav bar ---------- */
+  .nav-bar {
+    color: var(--fg);
+    background-color: color-mix(in srgb, var(--bg) 85%, transparent);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+    transition:
+      background-color 0.3s var(--ease-pw-soft),
+      color 0.3s var(--ease-pw-soft),
+      border-color 0.3s var(--ease-pw-soft);
+  }
+  .nav-bar [data-logo] text {
+    transition: fill 0.3s var(--ease-pw-soft);
+  }
+  .nav-bar [data-logo] path {
+    transition: stroke 0.3s var(--ease-pw-soft);
+  }
+  .nav-bar .nav-cta {
+    transition:
+      background-color 0.3s var(--ease-pw-soft),
+      color 0.3s var(--ease-pw-soft),
+      transform 0.3s var(--ease-pw-out);
+  }
+  /* !important: these must beat the Button's fill utilities, which sit in a later layer. */
+  .nav-bar:not([data-nav-theme='light']) .nav-cta {
+    background-color: var(--color-limestone) !important;
+    color: var(--color-cobalt) !important;
+  }
+  .nav-bar:not([data-nav-theme='light']) .nav-cta > span:first-child {
+    background-color: var(--color-paper) !important;
+  }
+
+  .skip-link {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 200;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: var(--color-slate);
+    color: var(--color-limestone);
+    transform: translateY(-160%);
+    transition: transform 0.3s var(--ease-pw-out);
+  }
+  .skip-link:focus-visible {
+    transform: none;
+  }
+
+  /* ---------- Responsive stage placement (see place() in lib/stage.ts) ---------- */
+  .rot {
+    transform: rotate(calc(var(--r, 0) * 1deg));
+  }
+  @media (min-width: 1024px) {
+    .dpos {
+      position: absolute;
+      left: calc(var(--u) * var(--dx));
+      top: calc(var(--u) * var(--dy));
+      width: calc(var(--u) * var(--dw));
+      height: calc(var(--u) * var(--dh));
+      font-size: calc(var(--u) * var(--dfs));
+      --r: var(--dr, 0);
+    }
+  }
+  @media (max-width: 1023.98px) {
+    .mpos {
+      position: absolute;
+      left: calc(var(--u) * var(--mx));
+      top: calc(var(--u) * var(--my));
+      width: calc(var(--u) * var(--mw));
+      height: calc(var(--u) * var(--mh));
+      font-size: calc(var(--u) * var(--mfs));
+      --r: var(--mr, 0);
+    }
+  }
+
+  /* ---------- Hero ---------- */
+  /*
+    Desktop: one 2562 x 1378 stage, contain-fitted and centred in 100svh.
+    Below 1024px: a column of top bar, board and bottom bar. The board is its
+    own 390 x 480 unit space, contain-fitted into whatever height is left
+    (container query units), so the jet always meets the letters.
+  */
+  .hero-stage {
+    display: flex;
+    flex-direction: column;
+    height: 100svh;
+    min-height: 560px;
+  }
+  .hero-art {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    container-type: size;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-board {
+    --u: min(calc(100cqw / 390), calc(100cqh / 480));
+    position: relative;
+    width: calc(var(--u) * 390);
+    height: calc(var(--u) * 480);
+  }
+  @media (min-width: 1024px) {
+    .hero-frame {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100svh;
+    }
+    .hero-stage {
+      --u: min(calc(var(--vw) / 2562), calc(100svh / 1378));
+      position: relative;
+      display: block;
+      width: calc(var(--u) * 2562);
+      height: calc(var(--u) * 1378);
+      min-height: 0;
+    }
+    .hero-art,
+    .hero-board {
+      position: absolute;
+      inset: 0;
+      width: auto;
+      height: auto;
+      --u: inherit;
+      container-type: normal;
+    }
+  }
+
+  /* Paper print: hairline paper frame, photo, mono caption. Sized in card units. */
+  .print {
+    --cu: calc(var(--u) * var(--print-scale, 1));
+    background: var(--color-paper);
+    border-radius: calc(var(--cu) * 4);
+    padding: calc(var(--cu) * 14) calc(var(--cu) * 14) calc(var(--cu) * 16);
+    box-shadow:
+      0 calc(var(--cu) * 4) calc(var(--cu) * 10) rgb(43 46 47 / 0.06),
+      0 calc(var(--cu) * 30) calc(var(--cu) * 60) rgb(43 46 47 / 0.18);
+  }
+  .print::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow:
+      0 calc(var(--cu) * 8) calc(var(--cu) * 16) rgb(43 46 47 / 0.08),
+      0 calc(var(--cu) * 50) calc(var(--cu) * 80) rgb(43 46 47 / 0.22);
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-pw-out);
+  }
+  .print-caption {
+    font-size: max(11px, calc(var(--cu) * 18));
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    margin-top: calc(var(--cu) * 14);
+  }
+
+  /* ---------- Services: pxpush-style stacking rows ---------- */
+  /*
+    Full-width rows on the section background, a hairline at the top of each.
+    Every row is sticky one title strip (--strip) lower than the last, so the
+    next row slides up and covers the one before, leaving its strip showing.
+
+    A sticky box cannot leave its container's content box, so each row's
+    sticky box is padded by the strips still to come (all stuck rows then end
+    on the same line, and the stack leaves as one), and the rows are pulled
+    back up by the same amount so they still sit edge to edge in the flow.
+  */
+  .services-grid {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  .services-grid > :nth-child(3) {
+    grid-column: 1 / -1;
+  }
+  .services-stack {
+    --n: 5;
+    --strip: 60px;
+    --row-pad: 14px;
+  }
+  .service-row {
+    position: sticky;
+    top: calc(var(--nav-h) + var(--i) * var(--strip));
+    padding-bottom: calc((var(--n) - 1 - var(--i)) * var(--strip));
+  }
+  .service-row + .service-row {
+    margin-top: calc(-1 * (var(--n) - var(--i)) * var(--strip));
+  }
+  .service-row-body {
+    min-height: var(--row-h, auto);
+    padding-top: var(--row-pad);
+    padding-bottom: 28px;
+  }
+  .row-strip {
+    min-height: calc(var(--strip) - var(--row-pad));
+  }
+  .service-title {
+    font-size: clamp(26px, 3.4vw, 60px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+  .service-photo {
+    aspect-ratio: 16 / 10;
+    margin-top: 20px;
+  }
+  .services-hold {
+    height: 8svh;
+  }
+  @media (min-width: 1024px) {
+    .services-grid {
+      grid-template-columns: 28% minmax(0, 1fr) 21.7vw;
+      column-gap: 2.2vw;
+    }
+    .services-grid > :nth-child(3) {
+      grid-column: auto;
+    }
+    .services-stack {
+      --strip: clamp(64px, 6.25vw, 112px);
+      --row-pad: clamp(10px, 0.8vw, 16px);
+    }
+    .service-row-body {
+      height: clamp(380px, 31vw, 560px);
+      padding-bottom: clamp(16px, 1.6vw, 28px);
+    }
+    .service-photo {
+      aspect-ratio: auto;
+      height: 100%;
+      margin-top: 0;
+    }
+  }
+
+  /* ---------- FAQ: height opens with grid rows, the answer fades up just behind it ---------- */
+  .faq-answer {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.7s var(--ease-pw-in-out);
+  }
+  .faq-answer.is-open {
+    grid-template-rows: 1fr;
+  }
+  .faq-answer > div {
+    min-height: 0;
+  }
+  .faq-answer-inner {
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.45s var(--ease-pw-soft),
+      transform 0.7s var(--ease-pw-in-out);
+  }
+  .faq-answer.is-open .faq-answer-inner {
+    opacity: 1;
+    transform: none;
+    transition-delay: 0.15s;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .faq-answer,
+    .faq-answer-inner {
+      transition: none;
+    }
+  }
+
+  /* ---------- Quote card ---------- */
+  .quote-card {
+    padding: clamp(20px, 2.2vw, 30px);
+    box-shadow:
+      0 4px 14px rgb(5 13 51 / 0.12),
+      0 30px 70px rgb(5 13 51 / 0.3);
+  }
+  .quote-title {
+    font-size: clamp(22px, 2.1vw, 28px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .quote-question {
+    font-size: clamp(19px, 1.6vw, 23px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .quote-option {
+    transition:
+      transform 0.4s var(--ease-pw-out),
+      border-color 0.4s var(--ease-pw-out),
+      background-color 0.25s var(--ease-pw-soft),
+      color 0.25s var(--ease-pw-soft);
+  }
+  @media (hover: hover) {
+    .quote-option[aria-checked='false']:hover {
+      transform: translateY(-2px);
+      border-color: rgb(43 46 47 / 0.42);
+    }
+  }
+  .quote-option:active {
+    transform: scale(0.98);
+  }
+  .quote-input {
+    width: 100%;
+    padding: 6px 0 8px;
+    border-bottom: 2px solid rgb(43 46 47 / 0.2);
+    background: transparent;
+    font-size: 17px;
+    transition: border-color 0.3s var(--ease-pw-out);
+  }
+  .quote-input::placeholder {
+    color: rgb(43 46 47 / 0.38);
+  }
+  .quote-input:focus-visible {
+    outline: none;
+    border-color: var(--color-cobalt);
+  }
+
+  /* ---------- Before / after ---------- */
+  [data-frame] {
+    --ba-inset: clamp(12px, 1.56vw, 20px);
+  }
+  .ba-pill {
+    position: absolute;
+    z-index: 1;
+    padding: 0.67em 1.22em;
+    border-radius: 999px;
+    background: rgb(31 33 34 / 0.55);
+    color: var(--color-limestone);
+    font-family: var(--font-mono);
+    font-weight: 500;
+    font-size: clamp(10px, 0.72vw, 12px);
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+  .ba-handle {
+    z-index: 2;
+    cursor: grab;
+    touch-action: none;
+  }
+  .ba-handle:active {
+    cursor: grabbing;
+  }
+
+  /* ---------- Stage units (method, desktop only) ---------- */
+  /* Phone: a column of steps with the route down the left gutter. */
+  .method-step {
+    --m-gutter: 38px;
+    position: relative;
+    padding-left: 56px;
+  }
+  .method-step + .method-step {
+    margin-top: clamp(56px, 14vw, 88px);
+  }
+  .step-pill {
+    margin-bottom: 14px;
+    font-size: 12px;
+  }
+  .step-title {
+    font-size: clamp(34px, 9.5vw, 48px);
+  }
+  .step-body {
+    margin-top: 14px;
+    max-width: 34ch;
+    font-size: var(--text-body);
+    line-height: 1.5;
+  }
+  .step-cta {
+    height: 48px;
+    padding-inline: 20px;
+    font-size: 15px;
+  }
+
+  /* Desktop: the 2562 x 3450 stage. Each step is pinned by its title row to its node. */
+  @media (min-width: 1024px) {
+    .method-stage {
+      --u: calc(var(--vw) / 2562);
+      position: relative;
+      height: calc(var(--u) * 3450);
+    }
+    .method-step {
+      position: absolute;
+      top: calc(var(--u) * var(--ny));
+      padding: 0;
+      transform: translateY(-50%);
+    }
+    .method-step + .method-step {
+      margin-top: 0;
+    }
+    .method-step[data-side='left'] {
+      right: calc(var(--u) * (2562 - var(--nx) + 110));
+      text-align: right;
+    }
+    .method-step[data-side='right'] {
+      left: calc(var(--u) * (var(--nx) + 110));
+    }
+    .step-pill {
+      position: absolute;
+      bottom: 100%;
+      margin-bottom: calc(var(--u) * 22);
+      font-size: max(11px, calc(var(--u) * 26));
+      white-space: nowrap;
+    }
+    .method-step[data-side='left'] .step-pill,
+    .method-step[data-side='left'] .step-body {
+      right: 0;
+    }
+    .method-step[data-side='left'] .step-title {
+      justify-content: flex-end;
+    }
+    .step-title {
+      font-size: calc(var(--u) * 104);
+    }
+    .step-body {
+      position: absolute;
+      top: 100%;
+      margin-top: calc(var(--u) * 22);
+      width: calc(var(--u) * 620);
+      max-width: none;
+      font-size: max(14px, calc(var(--u) * 32));
+    }
+    .step-cta {
+      height: max(40px, calc(var(--u) * 78));
+      padding-inline: max(16px, calc(var(--u) * 38));
+      font-size: max(13px, calc(var(--u) * 30));
+      border-radius: max(6px, calc(var(--u) * 10));
+    }
+  }
+
+}

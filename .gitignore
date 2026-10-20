@@ -1,0 +1,12 @@
+node_modules
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+.env*
+!.env.example
+.vercel
+# Source artwork from the brief (large originals, not served)
+/*.png
+/*.jpg
+/*.mp4
